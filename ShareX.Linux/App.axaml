@@ -1,0 +1,41 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ShareX.Linux.App">
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://ShareX.Avalonia/Theming/ShareXTheme.axaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+
+    <Application.Styles>
+        <FluentTheme />
+        <StyleInclude Source="avares://Avalonia.Controls.ColorPicker/Themes/Fluent/Fluent.xaml" />
+        <StyleInclude Source="avares://ShareX.Avalonia/Theming/ControlStyles.axaml"/>
+        <StyleInclude Source="avares://ShareX.Avalonia/Theming/ToolStyles.axaml"/>
+        <StyleInclude Source="avares://ShareX.ImageEditor/Presentation/Theming/EditorStyles.axaml"/>
+    </Application.Styles>
+
+    <TrayIcon.Icons>
+        <TrayIcons>
+            <TrayIcon Icon="/Assets/sharex.ico" ToolTipText="ShareX (Wayland)">
+                <TrayIcon.Menu>
+                    <NativeMenu>
+                        <NativeMenuItem Header="⛶ Capture Region" Click="OnTrayCaptureRegion" />
+                        <NativeMenuItem Header="🖥 Capture Full Screen" Click="OnTrayCaptureFullScreen" />
+                        <NativeMenuItemSeparator />
+                        <NativeMenuItem Header="🎥 Record Region (Video)" Click="OnTrayRecordVideo" />
+                        <NativeMenuItem Header="🎞 Record Region (GIF)" Click="OnTrayRecordGif" />
+                        <NativeMenuItemSeparator />
+                        <NativeMenuItem Header="✏ Open Image Editor" Click="OnTrayOpenEditor" />
+                        <NativeMenuItem Header="📋 Show Main Window" Click="OnTrayShowWindow" />
+                        <NativeMenuItemSeparator />
+                        <NativeMenuItem Header="✕ Exit ShareX" Click="OnTrayExit" />
+                    </NativeMenu>
+                </TrayIcon.Menu>
+            </TrayIcon>
+        </TrayIcons>
+    </TrayIcon.Icons>
+</Application>

@@ -117,6 +117,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         public event EventHandler? CopyAnnotationRequested;
         public event EventHandler? ZoomToFitRequested;
         public event EventHandler? CloseRequested;
+        public event Func<Task>? ContinueRequested;
         public event EventHandler? ImageInsertionRequested;
         public event EventHandler<EmojiSelectionRequest>? EmojiInsertionRequested;
 
@@ -142,9 +143,13 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         private EditorTaskResult _taskResult = EditorTaskResult.None;
 
         [RelayCommand]
-        private void Continue()
+        private async Task Continue()
         {
             TaskResult = EditorTaskResult.Continue;
+            if (ContinueRequested != null)
+            {
+                await ContinueRequested.Invoke();
+            }
             CloseRequested?.Invoke(this, EventArgs.Empty);
         }
 

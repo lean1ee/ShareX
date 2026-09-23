@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -68,7 +68,7 @@ public partial class SpeechBalloonAnnotation : Annotation
     /// <summary>
     /// Font family for the balloon text
     /// </summary>
-    public string FontFamily { get; set; } = "Segoe UI";
+    public string FontFamily { get; set; } = OperatingSystem.IsWindows() ? "Segoe UI" : "Inter";
 
     /// <summary>
     /// Text body color

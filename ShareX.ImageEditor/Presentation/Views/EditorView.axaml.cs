@@ -1271,7 +1271,7 @@ namespace ShareX.ImageEditor.Presentation.Views
             }
 
             notificationHost.RenderTransform = null;
-            if (!_isWorkspaceHostMode)
+            if (!_isWorkspaceHostMode || !OperatingSystem.IsWindows())
             {
                 return;
             }
@@ -2119,6 +2119,30 @@ namespace ShareX.ImageEditor.Presentation.Views
                     }
                 }
 
+                // Try host clipboard service (e.g. Wayland on Linux)
+                if (EditorServices.Clipboard != null)
+                {
+                    var hostBitmap = EditorServices.Clipboard.GetImage();
+                    if (hostBitmap != null)
+                    {
+                        vm.CloseModalCommand.Execute(null);
+                        LoadBitmapIntoEditor(vm, hostBitmap, null);
+                        return;
+                    }
+                }
+
+                // Fallback on Linux using wl-paste if available
+                if (OperatingSystem.IsLinux())
+                {
+                    var linuxBitmap = TryGetLinuxClipboardBitmap();
+                    if (linuxBitmap != null)
+                    {
+                        vm.CloseModalCommand.Execute(null);
+                        LoadBitmapIntoEditor(vm, linuxBitmap, null);
+                        return;
+                    }
+                }
+
                 ShowStartScreenStatus(vm, Strings.EditorView_ClipboardDoesNotContainImage);
             }
             catch (Exception ex)
@@ -2281,19 +2305,19 @@ namespace ShareX.ImageEditor.Presentation.Views
             await clipboard.SetDataAsync(data);
         }
 
-        private Task<string?> OnSaveRequested()
+        private async Task<string?> OnSaveRequested()
         {
-            if (DataContext is not MainViewModel vm) return Task.FromResult<string?>(null);
-            if (vm.HasHostSaveHandler) return Task.FromResult<string?>(null);
+            if (DataContext is not MainViewModel vm) return null;
+            if (vm.HasHostSaveHandler) return null;
 
             if (!string.IsNullOrEmpty(vm.ImageFilePath))
             {
                 SaveSnapshotToFile(vm.ImageFilePath!);
                 vm.IsDirty = false;
-                return Task.FromResult<string?>(vm.ImageFilePath);
+                return vm.ImageFilePath;
             }
 
-            return Task.FromResult<string?>(null);
+            return await SaveAsAsync();
         }
 
         private async Task<string?> OnSaveAsRequested()

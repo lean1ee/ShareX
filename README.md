@@ -1,139 +1,340 @@
-<p align="center"><a href="https://getsharex.com"><img src="https://getsharex.com/img/ShareX_Banner.png" alt="ShareX Banner"/></a></p>
-<h3 align="center">Screen capture, file sharing and productivity tool</h3>
-<br>
+# ShareX for Linux (Wayland Port)
+
 <div align="center">
-  <a href="https://github.com/ShareX/ShareX/actions/workflows/build.yml"><img src="https://img.shields.io/github/actions/workflow/status/ShareX/ShareX/build.yml?branch=develop&label=Build&cacheSeconds=3600" alt="GitHub Workflow Status"/></a>
-  <a href="./LICENSE.txt"><img src="https://img.shields.io/github/license/ShareX/ShareX?label=License&color=brightgreen&cacheSeconds=3600" alt="License"/></a>
-  <a href="https://github.com/ShareX/ShareX/releases/latest"><img src="https://img.shields.io/github/v/release/ShareX/ShareX?label=Release&color=brightgreen&cacheSeconds=3600" alt="Release"/></a>
-  <a href="https://getsharex.com/downloads"><img src="https://img.shields.io/github/downloads/ShareX/ShareX/total?label=Downloads&cacheSeconds=3600" alt="Downloads"/></a>
-  <a href="https://discord.gg/ShareX"><img src="https://img.shields.io/discord/194170124859736065?label=Discord&cacheSeconds=3600" alt="Discord"/></a>
-  <a href="https://twitter.com/intent/follow?screen_name=ShareX"><img src="https://img.shields.io/twitter/follow/ShareX?cacheSeconds=3600" alt="Twitter"/></a>
+  <img src="packaging/sharex.png" alt="ShareX Linux Logo" width="128" height="128" />
+  <h3>Native Screen Capture, Annotation, Recording & Productivity Tool for Wayland</h3>
+
+  [![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20Wayland-blue.svg)](#system-requirements)
+  [![Runtime](https://img.shields.io/badge/.NET-10.0-purple.svg)](https://dotnet.microsoft.com/)
+  [![Compositors](https://img.shields.io/badge/Supports-Niri%20%7C%20Hyprland%20%7C%20Sway%20%7C%20GNOME%20%7C%20KDE-green.svg)](#compositor-configuration)
+  [![License](https://img.shields.io/badge/License-GPLv3-brightgreen.svg)](./LICENSE.txt)
 </div>
-<br>
-<p align="center"><a href="https://getsharex.com"><img src="https://getsharex.com/img/ShareX_Screenshot.png" alt="ShareX Screenshot"/></a></p>
-<p align="center">For further information please check our <a href="https://getsharex.com">website</a></p>
 
-# ShareX - Free Screen Capture, Screenshot, File Sharing and Productivity Tool
+---
 
-ShareX is a free and open source screenshot tool, screen recorder, file sharing tool and productivity application for Windows. It is designed for users who need fast screen capture, powerful screenshot editing, automated sharing, custom upload destinations and practical utilities in one lightweight desktop app.
+**ShareX for Linux** is an advanced, lightweight screen capture, recording, annotation, and sharing application tailored natively for modern Linux Wayland environments (**Niri**, **Hyprland**, **Sway**, **GNOME**, **KDE Plasma**). 
 
-With ShareX, you can capture any area of your screen, record video or GIFs, annotate screenshots, upload files, copy shareable links, extract text with OCR, scan QR codes, pick colors and run custom workflows from hotkeys. ShareX is built for speed and control: capture a screenshot, edit it, save it, copy it, upload it or pass it through your own task chain with minimal manual work.
+It brings the rich productivity workflow of the legendary Windows ShareX to Linux without compromises: instant freeze-frame region captures, rich vector annotations, built-in image editing, GIF/MP4 recording, dynamic theme synchronization, and modular after-capture task automation.
 
-## Why ShareX?
+---
 
-ShareX combines screen capture, screen recording, image editing, file uploading and automation features that are often split across multiple applications. It is completely free, open source, lightweight, privacy focused and has no advertisements. No account is required to use ShareX.
+## Key Features
 
-ShareX is especially useful for developers, designers, support teams, content creators, technical writers, QA testers and power users who frequently create screenshots, record short clips, share files or document workflows. It can be used as a simple screenshot app, but it also supports advanced workflows for users who want precise control over capture methods, after-capture tasks, upload destinations and hotkeys.
+- **Blazing-Fast Wayland Capture**:
+  - Direct screencopy integration via `wlr-screencopy-v1` and `grim`.
+  - Interactive freeze-frame region capture with magnifying loupe and live color picker.
+  - Active monitor, full desktop, and custom crop area captures.
 
-## Screenshot and Screen Recording Features
+- **Built-in Annotation & Image Editor**:
+  - Full-featured canvas with undo/redo history.
+  - Shapes, arrows, numbered step badges, freehand brush, and speech bubbles.
+  - Privacy tools: blur, pixelation, magnification, and highlighter.
+  - Native color emoji sticker support powered by system fonts (`Noto Color Emoji`).
+  - Image effects: borders, shadow drop, color adjust, and filters.
 
-ShareX supports many ways to capture your screen:
+- **Screen & Animated GIF Recording**:
+  - Hardware-accelerated region and screen video recording via `wf-recorder` and `ffmpeg`.
+  - High-quality GIF generation with palette optimization.
 
-* Fullscreen capture
-* Active window capture
-* Active monitor capture
-* Region capture
-* Scrolling screenshot capture
-* Last region capture
-* Custom region capture
-* Screen recording
-* GIF screen recording
-* Auto capture
+- **Adaptive Theming Engine**:
+  - **Noctalia-shell Integration**: Automatically synchronizes in real time with `~/.config/noctalia/colors.json` (e.g. *Kanagawa*, *Catppuccin*, *Tokyo Night*).
+  - **XDG Desktop Portal**: Listens to system-wide Dark/Light preference and accent colors.
+  - **Presets**: Includes built-in palettes (*Kanagawa*, *Catppuccin Mocha/Latte*, *Tokyo Night*, *Nord*, *Classic*).
 
-After capturing a screenshot or recording, ShareX can automatically copy the result to the clipboard, save it to a file, open it in the image editor, upload it, print it, show it in Windows Explorer, run an action, scan a QR code or recognize text with OCR. These after-capture tasks make ShareX a flexible screenshot workflow tool instead of only a basic snipping utility.
+- **Productivity & Sharing**:
+  - Seamless Wayland clipboard integration (`wl-clipboard`) supporting both raw PNG buffers and text.
+  - Pin images directly to screen as floating, borderless reference windows.
+  - Built-in history viewer with quick preview, re-editing, and deletion.
+  - Custom uploader support (`.sxcu` format) and cloud destinations (Imgur, S3, custom APIs).
 
-## Region Capture and Annotation
+- **Daemon & Background Service**:
+  - Runs efficiently in the background via a systemd user service (`sharex.service`).
+  - Lightning-fast CLI commands via low-latency UNIX domain socket IPC.
+  - StatusNotifierItem tray menu for quick actions.
 
-ShareX region capture includes tools for selecting exactly what you want to capture and marking it before saving, copying or uploading. You can draw rectangles, ellipses, freehand lines, arrows, text, speech balloons, step numbers, highlights, blur effects, pixelation, magnification and spotlight effects.
+---
 
-These annotation tools help create clear screenshots for bug reports, documentation, tutorials, support replies, pull requests and release notes. Sensitive information can be hidden with blur, pixelate or smart eraser tools before a screenshot is shared.
+## System Requirements
 
-## Built-in Image Editor
+### Runtime Dependencies
 
-The ShareX image editor lets you crop, annotate, redact, highlight and prepare screenshots after capture. It includes common editing tools such as shapes, arrows, text, freehand drawing, image insertion, cursor insertion, blur, pixelate, magnify, spotlight, crop, cut out, background editing and image effects.
+| Package | Purpose | Arch / CachyOS | Fedora | Ubuntu / Debian |
+| :--- | :--- | :--- | :--- | :--- |
+| **.NET Runtime** | Core application runtime | `dotnet-runtime>=10.0` | `dotnet-runtime-10.0` | `dotnet-runtime-10.0` |
+| **grim** | Fast Wayland capture backend | `grim` | `grim` | `grim` |
+| **wf-recorder** | Screen video & GIF recorder | `wf-recorder` | `wf-recorder` | `wf-recorder` |
+| **ffmpeg** | Video encoding & GIF palette gen | `ffmpeg` | `ffmpeg` | `ffmpeg` |
+| **wl-clipboard** | Wayland clipboard manager | `wl-clipboard` | `wl-clipboard` | `wl-clipboard` |
+| **libnotify** | Desktop notification popups | `libnotify` | `libnotify` | `libnotify-bin` |
+| **noto-fonts-emoji** | Full-color emoji annotations | `noto-fonts-emoji` | `google-noto-emoji-fonts` | `fonts-noto-color-emoji` |
+| **slurp** *(optional)* | Fallback CLI region selector | `slurp` | `slurp` | `slurp` |
 
-Because the editor is part of the capture workflow, you can take a screenshot, mark the important area, hide private details and then copy, save or upload the edited image without switching between separate apps.
+---
 
-## File Sharing and Upload Automation
+## Linux Installation Guide
 
-ShareX can upload images, text, files, folders, clipboard content and URLs to many different destinations. After uploading, it can automatically copy the URL to the clipboard, open the URL, shorten the URL, show a QR code or run other configured tasks.
+### Method 1: Automated Local User Install (Recommended)
 
-Advanced users can create custom uploaders for services that are not built in. ShareX also provides guides for destinations such as Amazon S3, Google Cloud Storage and Cloudflare R2, making it suitable for both personal screenshot sharing and team workflows where files need to be uploaded to controlled storage.
+This method builds the application from source in Release mode and installs it into `~/.local` with a persistent `systemd --user` background service.
 
-## Productivity Tools
+```bash
+# 1. Install prerequisites (Arch / CachyOS example)
+sudo pacman -S --needed dotnet-sdk grim wf-recorder ffmpeg wl-clipboard libnotify noto-fonts-emoji
 
-ShareX includes many utilities that support everyday desktop work:
+# 2. Clone the repository
+git clone https://github.com/lean1ee/ShareX.git ~/projects/sharex_port
+cd ~/projects/sharex_port
 
-* Color picker
-* Screen color picker
-* Ruler
-* Pin to screen
-* Image editor
-* Image beautifier
-* Image effects
-* Image viewer
-* Background remover
-* Image comparer
-* Image combiner
-* Image splitter
-* Image thumbnailer
-* Video converter
-* Video thumbnailer
-* Analyze image
-* OCR for recognizing text in images
-* QR code
-* Hash checker
-* Metadata viewer
-* Directory indexer
-* Clipboard viewer
-* Borderless window
-* Inspect window
-* Monitor test
+# 3. Run the automated installer
+./scripts/install_user.sh
+```
 
-These tools make ShareX useful beyond screenshots. It can help inspect images, prepare assets, extract information, verify files and speed up repetitive tasks.
+#### What `install_user.sh` does:
+1. Compiles `ShareX.Linux` in Release mode (`linux-x64`) into `./bin/publish`.
+2. Creates a symlink at `~/.local/bin/sharex`.
+3. Installs desktop entry to `~/.local/share/applications/sharex.desktop`.
+4. Installs application icons to `~/.local/share/icons/hicolor/256x256/apps/sharex.png`.
+5. Configures and starts the systemd user service `sharex.service` (`systemctl --user enable --now sharex.service`).
+6. Verifies daemon connectivity using `sharex ping`.
 
-## Custom Workflows and Hotkeys
+---
 
-ShareX is built around configurable workflows. You can assign hotkeys to capture methods, choose what happens after capture, decide what happens after upload and create actions that run external tools or scripts. This makes it possible to build a workflow such as capture region, annotate image, save locally, upload to a destination, shorten the URL and copy the final link to the clipboard.
+### Method 2: Arch Linux PKGBUILD (System-wide Install)
 
-The workflow system is one of the main reasons ShareX is popular with power users. Simple tasks can stay simple, while advanced users can automate detailed screenshot, screen recording and file sharing processes.
+If you use Arch Linux, EndeavourOS, or CachyOS, you can install ShareX system-wide using the provided `PKGBUILD`:
 
-## Download ShareX
+```bash
+cd packaging
+makepkg -si
+```
 
-ShareX is available from the official website, GitHub releases, Microsoft Store and Steam. You can install the regular setup version, use a portable version or try development builds if you want the newest changes before a stable release.
+This installs the binary to `/usr/bin/sharex`, registers the desktop file in `/usr/share/applications`, and provisions the systemd user service in `/usr/lib/systemd/user/sharex.service`.
 
-For the safest download options, use the official links below.
+Enable the background service:
+```bash
+systemctl --user daemon-reload
+systemctl --user enable --now sharex.service
+```
 
-## Links
-* Official website: https://getsharex.com
-* Downloads: https://getsharex.com/downloads
-* GitHub: https://github.com/ShareX/ShareX
-* Changelog: https://getsharex.com/changelog
-* Screenshots: https://getsharex.com/screenshots
-* Privacy policy: https://getsharex.com/privacy-policy
-* Donate: https://getsharex.com/donate
-* X: https://x.com/ShareX
-* Discord: https://discord.gg/ShareX
-* Reddit: https://www.reddit.com/r/sharex
-* Steam page: https://store.steampowered.com/app/400040/ShareX/
-* Microsoft Store page: https://apps.microsoft.com/detail/9nblggh4z1sp
-* ShareX related projects on GitHub: https://github.com/topics/sharex
+---
 
-## Documents
-* Image effects: https://getsharex.com/image-effects
-* Actions: https://getsharex.com/actions
-* Dev builds: https://getsharex.com/docs/dev-builds
-* Keybinds: https://getsharex.com/docs/keybinds
-* Region capture: https://getsharex.com/docs/region-capture
-* Image editor: https://getsharex.com/docs/image-editor
-* Background remover: https://getsharex.com/docs/background-remover
-* Pin to screen: https://getsharex.com/docs/pin-to-screen
-* Scrolling screenshot: https://getsharex.com/docs/scrolling-screenshot
-* Command line arguments: https://getsharex.com/docs/command-line-arguments
-* Translation: https://getsharex.com/docs/translation
-* OCR: https://getsharex.com/docs/ocr
-* Custom uploader: https://getsharex.com/docs/custom-uploader
-* Amazon S3 guide: https://getsharex.com/docs/amazon-s3
-* Google Cloud Storage guide: https://getsharex.com/docs/google-cloud-storage
-* Cloudflare R2 guide: https://getsharex.com/docs/cloudflare-r2
-* Brand assets: https://getsharex.com/brand-assets
+### Method 3: Manual Build and Installation
+
+If you prefer full control over file paths:
+
+```bash
+# 1. Publish Release binary
+dotnet publish ShareX.Linux/ShareX.Linux.csproj \
+    -c Release \
+    -r linux-x64 \
+    --self-contained false \
+    -o ./bin/publish
+
+# 2. Symlink binary to PATH
+mkdir -p ~/.local/bin
+ln -sf "$(pwd)/bin/publish/ShareX.Linux" ~/.local/bin/sharex
+
+# 3. Install Desktop Shortcut & Icon
+mkdir -p ~/.local/share/applications ~/.local/share/icons/hicolor/256x256/apps
+cp packaging/sharex.desktop ~/.local/share/applications/
+cp packaging/sharex.png ~/.local/share/icons/hicolor/256x256/apps/
+update-desktop-database ~/.local/share/applications 2>/dev/null || true
+
+# 4. Install & Start Systemd Service
+mkdir -p ~/.config/systemd/user
+cp packaging/systemd/sharex.service ~/.config/systemd/user/
+systemctl --user daemon-reload
+systemctl --user enable --now sharex.service
+```
+
+---
+
+## Daemon & CLI Commands
+
+ShareX runs as an event-driven background service listening to a UNIX socket (`$XDG_RUNTIME_DIR/sharex/sharex.sock`). Trigger captures or windows by calling the `sharex` command from your terminal, scripts, or hotkey manager:
+
+```bash
+# Capture commands
+sharex --capture-region         # Interactive region selection -> execute workflows
+sharex --capture-region-edit    # Region selection -> opens directly in Image Editor
+sharex --capture-screen         # Instant full screen capture
+
+# Screen recording
+sharex --record-region          # Record selected area to MP4 (hardware accelerated)
+sharex --record-gif             # Record selected area to animated GIF
+
+# Windows & UI
+sharex --open-editor            # Open blank Image Editor
+sharex --open-editor /path/img  # Open existing image in Image Editor
+sharex show-window              # Show main ShareX dashboard
+sharex hide-window              # Minimize main dashboard to tray
+sharex toggle-window            # Toggle main dashboard visibility
+
+# Service management
+sharex ping                     # Test if daemon is running (returns "OK")
+sharex exit                     # Cleanly shut down ShareX service
+```
+
+---
+
+## Compositor Configuration
+
+### 1. Niri
+
+Add hotkeys to `~/.config/niri/cfg/keybinds.kdl`:
+*(Note: `repeat=false` is essential to prevent multiple captures when holding a key down)*
+
+```kdl
+binds {
+    Print       repeat=false hotkey-overlay-title="ShareX: Capture Region"        { spawn "sharex" "--capture-region"; }
+    Mod+Shift+S repeat=false hotkey-overlay-title="ShareX: Capture Region & Edit" { spawn "sharex" "--capture-region-edit"; }
+    Shift+Print repeat=false hotkey-overlay-title="ShareX: Capture Region & Edit" { spawn "sharex" "--capture-region-edit"; }
+    Ctrl+Print  repeat=false hotkey-overlay-title="ShareX: Capture Full Screen"   { spawn "sharex" "--capture-screen"; }
+    Alt+Print   repeat=false hotkey-overlay-title="ShareX: Record Region (Video)" { spawn "sharex" "--record-region"; }
+    Mod+Print   repeat=false hotkey-overlay-title="ShareX: Record Region (GIF)"   { spawn "sharex" "--record-gif"; }
+}
+```
+
+Add window rules to `~/.config/niri/cfg/rules.kdl`:
+
+```kdl
+// Pinned image annotations: floating, borderless
+window-rule {
+    match app-id=r#"^([Ss]hare[Xx].*|sharex)$"# title=r#"^Pinned Image.*"#
+    open-floating true
+    geometry-corner-radius 0
+    clip-to-geometry false
+}
+
+// Dialogs and color pickers: floating
+window-rule {
+    match app-id=r#"^([Ss]hare[Xx].*|sharex)$"# title=r#"^(Screen Color Picker|Color Picker|Insert Image|New Image|Select Area).*"#
+    open-floating true
+}
+
+// Main Window and Image Editor: open as tiling columns in the Niri ribbon
+window-rule {
+    match app-id=r#"^([Ss]hare[Xx].*|sharex)$"# title=r#"^(ShareX \(Wayland Linux\)|ShareX - Image editor).*"#
+    open-floating false
+}
+```
+
+---
+
+### 2. Hyprland
+
+Add keybinds and rules to `~/.config/hypr/hyprland.conf`:
+
+```ini
+# Keybindings
+bind = , Print, exec, sharex --capture-region
+bind = $mainMod SHIFT, S, exec, sharex --capture-region-edit
+bind = SHIFT, Print, exec, sharex --capture-region-edit
+bind = CTRL, Print, exec, sharex --capture-screen
+bind = ALT, Print, exec, sharex --record-region
+bind = $mainMod, Print, exec, sharex --record-gif
+
+# Window Rules
+windowrule = float, class:^(ShareX.*)$
+windowrule = float, class:^(sharex.*)$
+windowrule = center, class:^(ShareX.*)$
+windowrule = pin, title:^(Pinned Image.*)$
+windowrule = noborder, title:^(Pinned Image.*)$
+```
+
+---
+
+### 3. Sway
+
+Add to `~/.config/sway/config`:
+
+```ini
+# Keybindings
+bindsym Print exec sharex --capture-region
+bindsym Mod4+Shift+s exec sharex --capture-region-edit
+bindsym Shift+Print exec sharex --capture-region-edit
+bindsym Ctrl+Print exec sharex --capture-screen
+bindsym Mod1+Print exec sharex --record-region
+bindsym Mod4+Print exec sharex --record-gif
+
+# Rules
+for_window [app_id="ShareX.*"] floating enable
+for_window [title="Pinned Image.*"] floating enable, border none, sticky enable
+```
+
+---
+
+## Configuration & Data Paths
+
+ShareX stores configuration and runtime files following the XDG Base Directory specification:
+
+| Item | Path |
+| :--- | :--- |
+| **Settings File** | `~/.config/ShareX/sharex_settings.json` |
+| **History Database** | `~/.config/ShareX/history.json` |
+| **Default Screenshots** | `~/Pictures/Screenshots/` |
+| **Custom Uploaders** | `~/.config/ShareX/Uploaders/*.sxcu` |
+| **UNIX IPC Socket** | `/run/user/<UID>/sharex/sharex.sock` |
+| **Log Files** | `~/.config/ShareX/Logs/` |
+
+---
+
+## Service Management
+
+ShareX is managed via standard systemd user commands:
+
+```bash
+# Check service health and logs
+systemctl --user status sharex.service
+
+# View live application logs
+journalctl --user -u sharex.service -f
+
+# Restart daemon
+systemctl --user restart sharex.service
+
+# Stop daemon
+systemctl --user stop sharex.service
+```
+
+---
+
+## Troubleshooting
+
+### 1. `sharex` command fails with "Cannot connect to daemon"
+Make sure the user service is running:
+```bash
+systemctl --user status sharex.service
+```
+If it is not active, start it:
+```bash
+systemctl --user start sharex.service
+```
+
+### 2. Wayland Region Capture fails
+Ensure `grim` is installed and available in `$PATH`:
+```bash
+which grim
+```
+In Wayland compositors with security restrictions, verify that `wlr-screencopy` or `xdg-desktop-portal` has screen capture permissions enabled.
+
+### 3. Emojis render as blank boxes
+Install the Noto Color Emoji font package:
+```bash
+# Arch / CachyOS
+sudo pacman -S noto-fonts-emoji
+
+# Fedora
+sudo dnf install google-noto-emoji-fonts
+
+# Ubuntu / Debian
+sudo apt install fonts-noto-color-emoji
+```
+
+---
+
+## License
+
+ShareX for Linux is licensed under the [GNU General Public License v3.0 (GPLv3)](./LICENSE.txt).
+Original ShareX is copyright (c) 2007-2026 ShareX Team.
+Linux / Wayland port and integrations maintained by the ShareX Linux contributors.

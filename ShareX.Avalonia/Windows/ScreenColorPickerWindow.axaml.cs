@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -32,6 +32,9 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using ShareX.AvaloniaUI.Input;
 using ShareX.AvaloniaUI.Theming;
+using SkiaSharp;
+using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace ShareX.AvaloniaUI.Windows
@@ -62,6 +65,7 @@ namespace ShareX.AvaloniaUI.Windows
         private PointerAction _pointerAction;
         private Color _pressedColor;
         private PixelPoint _pressedPosition;
+        private SKBitmap? _linuxScreenBitmap;
 
         public ScreenColorPickerWindow() : this(new ScreenColorPickerOptions())
         {
@@ -120,16 +124,10 @@ namespace ShareX.AvaloniaUI.Windows
 
         private void OnLoaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            if (!OperatingSystem.IsWindows())
-            {
-                Complete(null);
-                return;
-            }
-
             Activate();
             Focus();
 
-            if (GetCursorPos(out NativePoint cursorPosition))
+            if (OperatingSystem.IsWindows() && GetCursorPos(out NativePoint cursorPosition))
             {
                 var screenPoint = new PixelPoint(cursorPosition.X, cursorPosition.Y);
                 UpdatePicker(screenPoint, this.PointToClient(screenPoint));
@@ -219,6 +217,21 @@ namespace ShareX.AvaloniaUI.Windows
             Width = (right - left) / scaling;
             Height = (bottom - top) / scaling;
             Cursor = CursorAssetLoader.GetCrosshairCursor(scaling);
+
+            if (_linuxScreenBitmap != null)
+            {
+                try
+                {
+                    using var stream = _linuxScreenBitmap.Encode(SKEncodedImageFormat.Png, 90).AsStream();
+                    var avaloniaBmp = new Avalonia.Media.Imaging.Bitmap(stream);
+                    var surface = this.FindControl<Canvas>("PickerSurface");
+                    if (surface != null)
+                    {
+                        surface.Background = new ImageBrush(avaloniaBmp) { Stretch = Stretch.Fill };
+                    }
+                }
+                catch { }
+            }
         }
 
         private void UpdatePicker(PixelPoint screenPoint, Point clientPoint)
@@ -275,6 +288,12 @@ namespace ShareX.AvaloniaUI.Windows
 
         private void InitializeMagnifierCapture()
         {
+            if (!OperatingSystem.IsWindows())
+            {
+                InitializeLinuxCapture();
+                return;
+            }
+
             nint screenDc = GetDC(nint.Zero);
 
             if (screenDc == nint.Zero)
@@ -318,8 +337,81 @@ namespace ShareX.AvaloniaUI.Windows
             }
         }
 
+        private void InitializeLinuxCapture()
+        {
+            try
+            {
+                using var proc = new Process();
+                proc.StartInfo.FileName = "grim";
+                proc.StartInfo.Arguments = "-";
+                proc.StartInfo.RedirectStandardOutput = true;
+                proc.StartInfo.UseShellExecute = false;
+                proc.StartInfo.CreateNoWindow = true;
+                if (proc.Start())
+                {
+                    using var ms = new MemoryStream();
+                    proc.StandardOutput.BaseStream.CopyTo(ms);
+                    proc.WaitForExit(1000);
+                    if (ms.Length > 0)
+                    {
+                        ms.Position = 0;
+                        _linuxScreenBitmap = SKBitmap.Decode(ms);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[ScreenColorPicker] Linux grim capture failed: {ex.Message}");
+            }
+        }
+
+        private unsafe bool TryUpdateLinuxMagnifier(PixelPoint center, WriteableBitmap bitmap, out Color color)
+        {
+            if (_linuxScreenBitmap == null)
+            {
+                color = default;
+                return false;
+            }
+
+            int imgW = _linuxScreenBitmap.Width;
+            int imgH = _linuxScreenBitmap.Height;
+            int cx = Math.Clamp(center.X, 0, imgW - 1);
+            int cy = Math.Clamp(center.Y, 0, imgH - 1);
+
+            SKColor centerColor = _linuxScreenBitmap.GetPixel(cx, cy);
+            color = Color.FromArgb(centerColor.Alpha, centerColor.Red, centerColor.Green, centerColor.Blue);
+
+            int radius = MagnifierPixelCount / 2;
+            using ILockedFramebuffer framebuffer = bitmap.Lock();
+            byte* dest = (byte*)framebuffer.Address;
+            int rowBytes = framebuffer.RowBytes;
+
+            for (int y = 0; y < MagnifierPixelCount; y++)
+            {
+                int sampleY = Math.Clamp(cy - radius + y, 0, imgH - 1);
+                for (int x = 0; x < MagnifierPixelCount; x++)
+                {
+                    int sampleX = Math.Clamp(cx - radius + x, 0, imgW - 1);
+                    SKColor px = _linuxScreenBitmap.GetPixel(sampleX, sampleY);
+
+                    int destOffset = (y * rowBytes) + (x * 4);
+                    dest[destOffset] = px.Blue;
+                    dest[destOffset + 1] = px.Green;
+                    dest[destOffset + 2] = px.Red;
+                    dest[destOffset + 3] = px.Alpha;
+                }
+            }
+
+            return true;
+        }
+
         private unsafe bool TryUpdateMagnifier(PixelPoint center, WriteableBitmap bitmap, out Color color)
         {
+            if (!OperatingSystem.IsWindows())
+            {
+                return TryUpdateLinuxMagnifier(center, bitmap, out color);
+            }
+
             if (_magnifierDc == nint.Zero || _magnifierDib == nint.Zero || _magnifierBits == nint.Zero)
             {
                 color = default;
@@ -368,6 +460,17 @@ namespace ShareX.AvaloniaUI.Windows
 
         private void DisposeMagnifierCapture()
         {
+            if (_linuxScreenBitmap != null)
+            {
+                _linuxScreenBitmap.Dispose();
+                _linuxScreenBitmap = null;
+            }
+
+            if (!OperatingSystem.IsWindows())
+            {
+                return;
+            }
+
             if (_magnifierDc != nint.Zero && _previousMagnifierObject != nint.Zero)
             {
                 SelectObject(_magnifierDc, _previousMagnifierObject);
@@ -390,6 +493,12 @@ namespace ShareX.AvaloniaUI.Windows
 
         private static bool TryGetScreenColor(PixelPoint point, out Color color)
         {
+            if (!OperatingSystem.IsWindows())
+            {
+                color = default;
+                return false;
+            }
+
             nint screenDc = GetDC(nint.Zero);
 
             if (screenDc == nint.Zero)

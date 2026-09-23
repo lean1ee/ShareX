@@ -41,9 +41,83 @@ namespace ShareX.AvaloniaUI.Theming
         private static ThemeVariant _currentTheme = ShareXDark;
         private static ApplicationThemeOptions? _options;
         private static IPlatformSettings? _platformSettings;
+        private static ThemePalette? _currentPalette;
 
         public static event EventHandler<ThemeVariant>? ThemeChanged;
         public static event EventHandler<Color>? AccentColorChanged;
+        public static event Action<ThemePalette>? PaletteApplied;
+
+        public static ThemePalette? CurrentPalette => _currentPalette;
+
+        public static ThemePalette? GetPreset(string name) => name switch
+        {
+            "Kanagawa" => ThemePalette.Kanagawa,
+            "CatppuccinMocha" or "Catppuccin Mocha" => ThemePalette.CatppuccinMocha,
+            "CatppuccinLatte" or "Catppuccin Latte" => ThemePalette.CatppuccinLatte,
+            "TokyoNight" or "Tokyo Night" => ThemePalette.TokyoNight,
+            "Nord" => ThemePalette.Nord,
+            "ClassicDark" or "Dark" or "ShareX Dark" => ThemePalette.ClassicDark,
+            "ClassicLight" or "Light" or "ShareX Light" => ThemePalette.ClassicLight,
+            _ => null
+        };
+
+        public static void ApplyPalette(ThemePalette palette)
+        {
+            ArgumentNullException.ThrowIfNull(palette);
+            _currentPalette = palette;
+
+            RunOnUIThread(() =>
+            {
+                var app = Application.Current;
+                if (app == null) return;
+
+                var theme = palette.IsDark ? ShareXDark : ShareXLight;
+                SetTheme(theme, app);
+
+                app.Resources["ShareX.Color.Background.Main"] = palette.BackgroundMain;
+                app.Resources["ShareX.Brush.Background.Main"] = new SolidColorBrush(palette.BackgroundMain);
+
+                app.Resources["ShareX.Color.Background.Panel"] = palette.BackgroundPanel;
+                app.Resources["ShareX.Brush.Background.Panel"] = new SolidColorBrush(palette.BackgroundPanel);
+
+                app.Resources["ShareX.Color.Background.Popup"] = palette.BackgroundPopup;
+                app.Resources["ShareX.Brush.Background.Popup"] = new SolidColorBrush(palette.BackgroundPopup);
+
+                app.Resources["ShareX.Color.Background.Toolbar"] = palette.BackgroundToolbar;
+                app.Resources["ShareX.Brush.Background.Toolbar"] = new SolidColorBrush(palette.BackgroundToolbar);
+
+                app.Resources["ShareX.Color.Border"] = palette.Border;
+                app.Resources["ShareX.Brush.Border"] = new SolidColorBrush(palette.Border);
+
+                app.Resources["ShareX.Color.Control.Background"] = palette.ControlBackground;
+                app.Resources["ShareX.Brush.Control.Background"] = new SolidColorBrush(palette.ControlBackground);
+
+                app.Resources["ShareX.Color.Control.Background.Hover"] = palette.ControlBackgroundHover;
+                app.Resources["ShareX.Brush.Control.Background.Hover"] = new SolidColorBrush(palette.ControlBackgroundHover);
+
+                app.Resources["ShareX.Color.Control.Border"] = palette.ControlBorder;
+                app.Resources["ShareX.Brush.Control.Border"] = new SolidColorBrush(palette.ControlBorder);
+
+                app.Resources["ShareX.Color.Separator"] = palette.Separator;
+                app.Resources["ShareX.Brush.Separator"] = new SolidColorBrush(palette.Separator);
+
+                app.Resources["ShareX.Color.Text"] = palette.Text;
+                app.Resources["ShareX.Brush.Text"] = new SolidColorBrush(palette.Text);
+
+                app.Resources["ShareX.Color.Text.Secondary"] = palette.TextSecondary;
+                app.Resources["ShareX.Brush.Text.Secondary"] = new SolidColorBrush(palette.TextSecondary);
+
+                app.Resources["ShareX.Color.Status.Success"] = palette.StatusSuccess;
+                app.Resources["ShareX.Brush.Status.Success"] = new SolidColorBrush(palette.StatusSuccess);
+
+                app.Resources["ShareX.Color.Status.Error"] = palette.StatusError;
+                app.Resources["ShareX.Brush.Status.Error"] = new SolidColorBrush(palette.StatusError);
+
+                ApplyAccentColor(app, palette.Accent);
+
+                PaletteApplied?.Invoke(palette);
+            });
+        }
 
         public static void Configure(ApplicationThemeOptions options)
         {

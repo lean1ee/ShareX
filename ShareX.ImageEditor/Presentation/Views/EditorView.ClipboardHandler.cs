@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -268,6 +268,26 @@ namespace ShareX.ImageEditor.Presentation.Views
                         return;
                     }
                 }
+
+                // Try host clipboard service (e.g. Wayland on Linux)
+                if (EditorServices.Clipboard != null)
+                {
+                    var hostBitmap = EditorServices.Clipboard.GetImage();
+                    if (hostBitmap != null)
+                    {
+                        await InsertExternalImageAsync(hostBitmap);
+                        return;
+                    }
+                }
+                else if (OperatingSystem.IsLinux())
+                {
+                    var linuxBitmap = TryGetLinuxClipboardBitmap();
+                    if (linuxBitmap != null)
+                    {
+                        await InsertExternalImageAsync(linuxBitmap);
+                        return;
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -314,6 +334,10 @@ namespace ShareX.ImageEditor.Presentation.Views
                             if (bitmap != null)
                             {
                                 (bitmap as IDisposable)?.Dispose();
+                                canPaste = true;
+                            }
+                            else if (OperatingSystem.IsLinux() && HasLinuxClipboardImage())
+                            {
                                 canPaste = true;
                             }
                         }
@@ -381,10 +405,69 @@ namespace ShareX.ImageEditor.Presentation.Views
                 vm.HasAnnotations = true;
             }
         }
-
         private void OnDuplicateRequested(object? sender, EventArgs e)
         {
             DuplicateSelectedAnnotation();
+        }
+
+        internal static SKBitmap? TryGetLinuxClipboardBitmap()
+        {
+            try
+            {
+                var psi = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = "wl-paste",
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true
+                };
+                psi.ArgumentList.Add("-t");
+                psi.ArgumentList.Add("image/png");
+
+                using var process = System.Diagnostics.Process.Start(psi);
+                if (process == null) return null;
+
+                using var ms = new MemoryStream();
+                process.StandardOutput.BaseStream.CopyTo(ms);
+                process.WaitForExit();
+
+                if (process.ExitCode == 0 && ms.Length > 0)
+                {
+                    ms.Position = 0;
+                    return SKBitmap.Decode(ms);
+                }
+            }
+            catch { }
+            return null;
+        }
+
+        internal static bool HasLinuxClipboardImage()
+        {
+            try
+            {
+                var psi = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = "wl-paste",
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true
+                };
+                psi.ArgumentList.Add("-l");
+
+                using var process = System.Diagnostics.Process.Start(psi);
+                if (process == null) return false;
+
+                var text = process.StandardOutput.ReadToEnd();
+                process.WaitForExit();
+
+                return process.ExitCode == 0 && (text.Contains("image/png") || text.Contains("image/jpeg") || text.Contains("image/bmp"));
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

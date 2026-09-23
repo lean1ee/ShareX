@@ -75,16 +75,13 @@ namespace ShareX.ImageEditor.Presentation.Rendering
 
         public static SKBitmap? CreateAnnotationBitmap(CursorType cursorType)
         {
-            if (!OperatingSystem.IsWindows())
-            {
-                return null;
-            }
-
             lock (SyncRoot)
             {
                 if (!AnnotationBitmapCache.TryGetValue(cursorType, out SKBitmap? cachedBitmap))
                 {
-                    cachedBitmap = RenderCursorBitmap(cursorType);
+                    cachedBitmap = OperatingSystem.IsWindows()
+                        ? RenderCursorBitmap(cursorType)
+                        : RenderFallbackCursor(cursorType);
                     AnnotationBitmapCache[cursorType] = cachedBitmap;
                 }
 
@@ -94,11 +91,6 @@ namespace ShareX.ImageEditor.Presentation.Rendering
 
         public static Bitmap? GetPreviewBitmap(CursorType cursorType, int previewSize = 28)
         {
-            if (!OperatingSystem.IsWindows())
-            {
-                return null;
-            }
-
             lock (SyncRoot)
             {
                 var cacheKey = (cursorType, previewSize);
@@ -111,6 +103,73 @@ namespace ShareX.ImageEditor.Presentation.Rendering
 
                 return previewBitmap;
             }
+        }
+
+        private static SKBitmap RenderFallbackCursor(CursorType cursorType)
+        {
+            const int size = 32;
+            var bitmap = new SKBitmap(new SKImageInfo(size, size, SKColorType.Bgra8888, SKAlphaType.Premul));
+            using var canvas = new SKCanvas(bitmap);
+            canvas.Clear(SKColors.Transparent);
+
+            using var fillPaint = new SKPaint
+            {
+                Color = SKColors.White,
+                Style = SKPaintStyle.Fill,
+                IsAntialias = true
+            };
+            using var strokePaint = new SKPaint
+            {
+                Color = SKColors.Black,
+                Style = SKPaintStyle.Stroke,
+                StrokeWidth = 1.5f,
+                StrokeJoin = SKStrokeJoin.Round,
+                IsAntialias = true
+            };
+
+            switch (cursorType)
+            {
+                case CursorType.Cross:
+                    using (var path = new SKPath())
+                    {
+                        path.MoveTo(16, 4); path.LineTo(16, 28);
+                        path.MoveTo(4, 16); path.LineTo(28, 16);
+                        strokePaint.StrokeWidth = 2f;
+                        canvas.DrawPath(path, strokePaint);
+                    }
+                    break;
+
+                case CursorType.IBeam:
+                    using (var path = new SKPath())
+                    {
+                        path.MoveTo(10, 6); path.LineTo(22, 6);
+                        path.MoveTo(16, 6); path.LineTo(16, 26);
+                        path.MoveTo(10, 26); path.LineTo(22, 26);
+                        strokePaint.StrokeWidth = 2f;
+                        canvas.DrawPath(path, strokePaint);
+                    }
+                    break;
+
+                default:
+                    // Classic pointer arrow
+                    using (var path = new SKPath())
+                    {
+                        path.MoveTo(4, 4);
+                        path.LineTo(4, 25);
+                        path.LineTo(10, 19);
+                        path.LineTo(14, 28);
+                        path.LineTo(17, 26);
+                        path.LineTo(13, 17);
+                        path.LineTo(21, 17);
+                        path.Close();
+
+                        canvas.DrawPath(path, fillPaint);
+                        canvas.DrawPath(path, strokePaint);
+                    }
+                    break;
+            }
+
+            return bitmap;
         }
 
         private static Bitmap? CreatePreviewBitmap(CursorType cursorType, int previewSize)

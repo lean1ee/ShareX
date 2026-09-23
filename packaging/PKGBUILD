@@ -1,0 +1,52 @@
+# Maintainer: ShareX Linux Team
+pkgname=sharex-wayland
+pkgver=21.0.0
+pkgrel=1
+pkgdesc="Screen capture, file sharing and productivity tool for Wayland (ShareX port)"
+arch=('x86_64' 'aarch64')
+url="https://github.com/lean1ee/ShareX"
+license=('GPL-3.0-or-later')
+depends=(
+    'dotnet-runtime>=10.0'
+    'grim'
+    'wf-recorder'
+    'ffmpeg'
+    'wl-clipboard'
+    'libnotify'
+)
+optdepends=(
+    'slurp: CLI region selector fallback'
+)
+provides=('sharex')
+conflicts=('sharex')
+
+build() {
+    cd "$srcdir/.."
+    dotnet publish ShareX.Linux/ShareX.Linux.csproj \
+        -c Release \
+        -r linux-x64 \
+        --self-contained false \
+        -o "$srcdir/build_output"
+}
+
+package() {
+    # Install application files
+    install -d "$pkgdir/usr/lib/$pkgname"
+    cp -dr --no-preserve=ownership "$srcdir/build_output/"* "$pkgdir/usr/lib/$pkgname/"
+
+    # Create binary symlink in /usr/bin
+    install -d "$pkgdir/usr/bin"
+    ln -s "/usr/lib/$pkgname/ShareX.Linux" "$pkgdir/usr/bin/sharex"
+
+    # Install desktop entry
+    install -Dm644 "$srcdir/../packaging/sharex.desktop" \
+        "$pkgdir/usr/share/applications/sharex.desktop"
+
+    # Install icon
+    install -Dm644 "$srcdir/../packaging/sharex.png" \
+        "$pkgdir/usr/share/icons/hicolor/256x256/apps/sharex.png"
+
+    # Install systemd user service
+    install -Dm644 "$srcdir/../packaging/systemd/sharex.service" \
+        "$pkgdir/usr/lib/systemd/user/sharex.service"
+}

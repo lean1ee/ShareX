@@ -1,0 +1,395 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ShareX.Linux.ViewModels"
+        x:Class="ShareX.Linux.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="ShareX (Wayland Linux)"
+        Icon="/Assets/sharex.ico"
+        Width="960"
+        Height="640"
+        MinWidth="800"
+        MinHeight="500"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource ShareX.Brush.Background.Main}">
+
+    <Grid ColumnDefinitions="240,*">
+        <!-- Sidebar -->
+        <Border Grid.Column="0"
+                Background="{DynamicResource ShareX.Brush.Background.Panel}"
+                BorderBrush="{DynamicResource ShareX.Brush.Border}"
+                BorderThickness="0,0,1,0"
+                Padding="16,20">
+            <DockPanel>
+                <!-- Brand Header (Draggable) -->
+                <StackPanel DockPanel.Dock="Top" Spacing="6" Margin="0,0,0,24"
+                            PointerPressed="OnTitleBarPointerPressed" Cursor="Hand" Background="Transparent">
+                    <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                        <Border Width="32" Height="32" CornerRadius="8" Background="{DynamicResource ShareX.Brush.Accent.Start}">
+                            <TextBlock Text="SX" Foreground="{DynamicResource ShareX.Brush.Accent.Foreground}" FontWeight="Bold" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <TextBlock Text="ShareX" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource ShareX.Brush.Text}" VerticalAlignment="Center" />
+                        <Border Background="{DynamicResource ShareX.Brush.Control.Background}" CornerRadius="4" Padding="6,2" VerticalAlignment="Center">
+                            <TextBlock Text="Wayland" FontSize="10" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}" FontWeight="SemiBold" />
+                        </Border>
+                    </StackPanel>
+                    <TextBlock Text="Screen Capture &amp; Productivity" FontSize="11" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}" />
+                </StackPanel>
+
+                <!-- Status Footer -->
+                <Border DockPanel.Dock="Bottom" Background="{DynamicResource ShareX.Brush.Background.Toolbar}" CornerRadius="8" Padding="10,8" Margin="0,10,0,0">
+                    <TextBlock Text="{Binding StatusMessage}" FontSize="11" Foreground="{DynamicResource ShareX.Brush.Accent.Start}" TextTrimming="CharacterEllipsis" />
+                </Border>
+
+                <!-- Navigation Items -->
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Spacing="4">
+                        <Button Name="BtnNavDashboard" Click="OnNavDashboard" Classes="nav-btn active">
+                            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                                <Path Data="M4 4h3l2-2h6l2 2h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm8 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"
+                                      Fill="{Binding $parent[Button].Foreground}" Width="16" Height="16" VerticalAlignment="Center" Stretch="Uniform" />
+                                <TextBlock Text="Capture" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold" />
+                            </StackPanel>
+                        </Button>
+
+                        <Button Name="BtnNavHistory" Click="OnNavHistory" Classes="nav-btn">
+                            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                                <Path Data="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"
+                                      Fill="{Binding $parent[Button].Foreground}" Width="16" Height="16" VerticalAlignment="Center" Stretch="Uniform" />
+                                <TextBlock Text="History" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold" />
+                            </StackPanel>
+                        </Button>
+
+                        <Button Name="BtnNavWorkflows" Click="OnNavWorkflows" Classes="nav-btn">
+                            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                                <Path Data="M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.92c.04-.34.07-.69.07-1.08s-.03-.74-.07-1.08l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.34-.07.69-.07 1.08s.03.74.07 1.08l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65z"
+                                      Fill="{Binding $parent[Button].Foreground}" Width="16" Height="16" VerticalAlignment="Center" Stretch="Uniform" />
+                                <TextBlock Text="Workflows" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold" />
+                            </StackPanel>
+                        </Button>
+
+                        <Button Name="BtnNavDestinations" Click="OnNavDestinations" Classes="nav-btn">
+                            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                                <Path Data="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"
+                                      Fill="{Binding $parent[Button].Foreground}" Width="16" Height="16" VerticalAlignment="Center" Stretch="Uniform" />
+                                <TextBlock Text="Destinations" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold" />
+                            </StackPanel>
+                        </Button>
+
+                        <Button Name="BtnNavShortcuts" Click="OnNavShortcuts" Classes="nav-btn">
+                            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                                <Path Data="M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z"
+                                      Fill="{Binding $parent[Button].Foreground}" Width="16" Height="16" VerticalAlignment="Center" Stretch="Uniform" />
+                                <TextBlock Text="Shortcuts (Niri)" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold" />
+                            </StackPanel>
+                        </Button>
+
+                        <Button Name="BtnNavSettings" Click="OnNavSettings" Classes="nav-btn">
+                            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                                <Path Data="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"
+                                      Fill="{Binding $parent[Button].Foreground}" Width="16" Height="16" VerticalAlignment="Center" Stretch="Uniform" />
+                                <TextBlock Text="Settings" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+
+        <!-- Main Content Area -->
+        <Grid Grid.Column="1" RowDefinitions="Auto,*">
+            <!-- Top Drag / Action Bar -->
+            <Border Grid.Row="0" Height="32" Padding="16,6" Background="{DynamicResource ShareX.Brush.Background.Main}"
+                    PointerPressed="OnTitleBarPointerPressed" Cursor="Hand">
+                <DockPanel LastChildFill="False">
+                    <TextBlock DockPanel.Dock="Left" Text="ShareX (Wayland)" FontSize="11" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}" VerticalAlignment="Center" />
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="4">
+                        <Button Content="🗕" Click="OnMinimizeWindow" ToolTip.Tip="Minimize to tray" Background="Transparent" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}" Padding="8,2" FontSize="11" CornerRadius="4" />
+                        <Button Content="✕" Click="OnCloseWindow" ToolTip.Tip="Close to tray" Background="Transparent" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}" Padding="8,2" FontSize="11" CornerRadius="4" />
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <Border Grid.Row="1" Padding="28,8,28,28" Background="{DynamicResource ShareX.Brush.Background.Main}">
+                <Carousel Name="ContentCarousel">
+                <!-- Tab 1: Dashboard -->
+                <Carousel.Items>
+                    <!-- 0: Dashboard -->
+                    <ScrollViewer>
+                        <StackPanel Spacing="20">
+                            <TextBlock Text="Quick Actions" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource ShareX.Brush.Text}" />
+
+                            <UniformGrid Columns="2" Rows="2">
+                                <!-- Card: Region -->
+                                <Button Command="{Binding CaptureRegionCommand}" Margin="6" Padding="16" Height="110"
+                                        Background="{DynamicResource ShareX.Brush.Background.Panel}"
+                                        BorderBrush="{DynamicResource ShareX.Brush.Border}" BorderThickness="1"
+                                        CornerRadius="12" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Text="⛶  Capture Region" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource ShareX.Brush.Accent.Start}" />
+                                        <TextBlock Text="Freeze screen and draw a custom region with magnifying loupe and color picker."
+                                                   TextWrapping="Wrap" FontSize="12" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}" />
+                                    </StackPanel>
+                                </Button>
+
+                                <!-- Card: Fullscreen -->
+                                <Button Command="{Binding CaptureFullScreenCommand}" Margin="6" Padding="16" Height="110"
+                                        Background="{DynamicResource ShareX.Brush.Background.Panel}"
+                                        BorderBrush="{DynamicResource ShareX.Brush.Border}" BorderThickness="1"
+                                        CornerRadius="12" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Text="🖥  Full Screen" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource ShareX.Brush.Status.Success}" />
+                                        <TextBlock Text="Instantly capture the entire Wayland desktop and execute after-capture tasks."
+                                                   TextWrapping="Wrap" FontSize="12" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}" />
+                                    </StackPanel>
+                                </Button>
+
+                                <!-- Card: Record Video -->
+                                <Button Command="{Binding RecordRegionCommand}" Margin="6" Padding="16" Height="110"
+                                        Background="{DynamicResource ShareX.Brush.Background.Panel}"
+                                        BorderBrush="{DynamicResource ShareX.Brush.Border}" BorderThickness="1"
+                                        CornerRadius="12" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Text="🎥  Record Video (MP4)" FontSize="16" FontWeight="SemiBold" Foreground="#FAB387" />
+                                        <TextBlock Text="Record chosen region or screen using wf-recorder hardware acceleration."
+                                                   TextWrapping="Wrap" FontSize="12" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}" />
+                                    </StackPanel>
+                                </Button>
+
+                                <!-- Card: Record GIF -->
+                                <Button Command="{Binding RecordGifCommand}" Margin="6" Padding="16" Height="110"
+                                        Background="{DynamicResource ShareX.Brush.Background.Panel}"
+                                        BorderBrush="{DynamicResource ShareX.Brush.Border}" BorderThickness="1"
+                                        CornerRadius="12" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Text="🎞  Record Animated GIF" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource ShareX.Brush.Status.Error}" />
+                                        <TextBlock Text="Capture screen region and convert to high-quality GIF with custom palette."
+                                                   TextWrapping="Wrap" FontSize="12" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}" />
+                                    </StackPanel>
+                                </Button>
+                            </UniformGrid>
+
+                            <!-- Open Editor Banner -->
+                            <Border Background="{DynamicResource ShareX.Brush.Background.Panel}"
+                                    BorderBrush="{DynamicResource ShareX.Brush.Border}" BorderThickness="1"
+                                    CornerRadius="12" Padding="16" Margin="6,10,6,0">
+                                <DockPanel>
+                                    <Button DockPanel.Dock="Right" Command="{Binding OpenEditorBlankCommand}"
+                                            Content="Open Image Editor" Background="{DynamicResource ShareX.Brush.Accent.Start}"
+                                            Foreground="{DynamicResource ShareX.Brush.Accent.Foreground}"
+                                            CornerRadius="8" Padding="14,8" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Text="✏  ShareX Image Annotator &amp; Editor" FontWeight="SemiBold" FontSize="15" Foreground="{DynamicResource ShareX.Brush.Text}" />
+                                        <TextBlock Text="Draw arrows, shapes, text, pixelate, blur, crop and add effects directly." FontSize="12" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}" />
+                                    </StackPanel>
+                                </DockPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <!-- 1: History -->
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="16" Margin="0,0,0,16">
+                            <TextBlock Text="Capture History" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource ShareX.Brush.Text}" VerticalAlignment="Center" />
+                            <Button Content="Refresh" Command="{Binding RefreshHistoryCommand}"
+                                    Background="{DynamicResource ShareX.Brush.Control.Background}"
+                                    Foreground="{DynamicResource ShareX.Brush.Text}" CornerRadius="6" Padding="10,4" />
+                        </StackPanel>
+
+                        <ListBox ItemsSource="{Binding HistoryItems}" Background="Transparent">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="{DynamicResource ShareX.Brush.Background.Panel}"
+                                            BorderBrush="{DynamicResource ShareX.Brush.Border}" BorderThickness="1"
+                                            CornerRadius="8" Padding="12,8" Margin="0,4">
+                                        <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+                                            <Border Grid.Column="0" Width="36" Height="36" CornerRadius="6" Background="{DynamicResource ShareX.Brush.Control.Background}" Margin="0,0,12,0">
+                                                <TextBlock Text="🖼" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Border>
+
+                                            <StackPanel Grid.Column="1" Spacing="2">
+                                                <TextBlock Text="{Binding FileName}" Foreground="{DynamicResource ShareX.Brush.Text}" FontWeight="SemiBold" FontSize="13" />
+                                                <TextBlock Text="{Binding FilePath}" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}" FontSize="11" TextTrimming="CharacterEllipsis" />
+                                            </StackPanel>
+
+                                            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+                                                <Button Content="Open"
+                                                        Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).OpenFileCommand}"
+                                                        CommandParameter="{Binding}"
+                                                        Background="{DynamicResource ShareX.Brush.Control.Background}"
+                                                        Foreground="{DynamicResource ShareX.Brush.Text}" CornerRadius="6" Padding="8,4" FontSize="11" />
+                                                <Button Content="Edit"
+                                                        Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).EditHistoryEntryCommand}"
+                                                        CommandParameter="{Binding}"
+                                                        Background="{DynamicResource ShareX.Brush.Accent.Start}"
+                                                        Foreground="{DynamicResource ShareX.Brush.Accent.Foreground}" CornerRadius="6" Padding="8,4" FontSize="11" />
+                                                <Button Content="✕"
+                                                        Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).DeleteHistoryEntryCommand}"
+                                                        CommandParameter="{Binding}"
+                                                        Background="{DynamicResource ShareX.Brush.Control.Background}"
+                                                        Foreground="{DynamicResource ShareX.Brush.Status.Error}" CornerRadius="6" Padding="8,4" FontSize="11" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </DockPanel>
+
+                    <!-- 2: Workflows -->
+                    <ScrollViewer>
+                        <StackPanel Spacing="16">
+                            <TextBlock Text="After Capture Workflows" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource ShareX.Brush.Text}" />
+                            <TextBlock Text="Select which tasks should run automatically every time a capture is taken:" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}" FontSize="13" />
+
+                            <Border Background="{DynamicResource ShareX.Brush.Background.Panel}"
+                                    BorderBrush="{DynamicResource ShareX.Brush.Border}" BorderThickness="1"
+                                    CornerRadius="12" Padding="20" Margin="0,8">
+                                <StackPanel Spacing="14">
+                                    <CheckBox IsChecked="{Binding CopyImageToClipboard}" Content="📋  Copy image to Wayland clipboard" Foreground="{DynamicResource ShareX.Brush.Text}" />
+                                    <CheckBox IsChecked="{Binding SaveImageToFile}" Content="💾  Save image to screenshots folder" Foreground="{DynamicResource ShareX.Brush.Text}" />
+                                    <CheckBox IsChecked="{Binding OpenInEditor}" Content="✏  Open image immediately in ShareX Image Editor" Foreground="{DynamicResource ShareX.Brush.Text}" />
+                                    <CheckBox IsChecked="{Binding UploadToHost}" Content="☁  Upload image to configured destination (Imgur / SXCU)" Foreground="{DynamicResource ShareX.Brush.Text}" />
+                                    <CheckBox IsChecked="{Binding ShowNotification}" Content="🔔  Show native Linux desktop notification" Foreground="{DynamicResource ShareX.Brush.Text}" />
+                                </StackPanel>
+                            </Border>
+
+                            <Button Content="Save Workflow Settings" Command="{Binding SaveSettingsCommand}"
+                                    Background="{DynamicResource ShareX.Brush.Accent.Start}"
+                                    Foreground="{DynamicResource ShareX.Brush.Accent.Foreground}"
+                                    FontWeight="SemiBold" CornerRadius="8" Padding="16,8" />
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <!-- 3: Destinations -->
+                    <ScrollViewer>
+                        <StackPanel Spacing="16">
+                            <TextBlock Text="Destinations &amp; Uploaders" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource ShareX.Brush.Text}" />
+                            <TextBlock Text="Configure where captured screenshots and files are uploaded:" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}" FontSize="13" />
+
+                            <Border Background="{DynamicResource ShareX.Brush.Background.Panel}"
+                                    BorderBrush="{DynamicResource ShareX.Brush.Border}" BorderThickness="1"
+                                    CornerRadius="12" Padding="20" Margin="0,8">
+                                <StackPanel Spacing="16">
+                                    <TextBlock Text="Active Image Uploader" FontWeight="SemiBold" Foreground="{DynamicResource ShareX.Brush.Text}" />
+                                    <ComboBox SelectedItem="{Binding SelectedUploader}" HorizontalAlignment="Stretch">
+                                        <ComboBoxItem Content="Imgur" />
+                                        <ComboBoxItem Content="Custom Uploader (.sxcu)" />
+                                    </ComboBox>
+
+                                    <TextBlock Text="Custom Uploader (.sxcu path)" FontWeight="SemiBold" Foreground="{DynamicResource ShareX.Brush.Text}" Margin="0,8,0,0" />
+                                    <TextBox Text="{Binding CustomSxcuPath}" PlaceholderText="/path/to/custom_uploader.sxcu" />
+                                </StackPanel>
+                            </Border>
+
+                            <Button Content="Save Destination Settings" Command="{Binding SaveSettingsCommand}"
+                                    Background="{DynamicResource ShareX.Brush.Accent.Start}"
+                                    Foreground="{DynamicResource ShareX.Brush.Accent.Foreground}"
+                                    FontWeight="SemiBold" CornerRadius="8" Padding="16,8" />
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <!-- 4: Shortcuts (Niri / Wayland) -->
+                    <ScrollViewer>
+                        <StackPanel Spacing="16">
+                            <TextBlock Text="Wayland Shortcuts (Niri / Hyprland / Sway)" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource ShareX.Brush.Text}" />
+                            <TextBlock Text="Wayland compositors handle global keybindings directly in their config files. Add these lines to bind your PrintScreen key to ShareX:"
+                                       TextWrapping="Wrap" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}" FontSize="13" />
+
+                            <Border Background="{DynamicResource ShareX.Brush.Background.Toolbar}" CornerRadius="8" Padding="16"
+                                    BorderBrush="{DynamicResource ShareX.Brush.Border}" BorderThickness="1">
+                                <StackPanel Spacing="12">
+                                    <TextBox Text="{Binding NiriConfigSnippet}" IsReadOnly="True" AcceptsReturn="True"
+                                             FontFamily="monospace" FontSize="12" Background="Transparent" BorderThickness="0"
+                                             Foreground="{DynamicResource ShareX.Brush.Text}" />
+                                    <Button Content="Copy Snippet to Clipboard" Command="{Binding CopySnippetCommand}"
+                                            Background="{DynamicResource ShareX.Brush.Accent.Start}"
+                                            Foreground="{DynamicResource ShareX.Brush.Accent.Foreground}"
+                                            CornerRadius="6" Padding="12,6" FontWeight="SemiBold" />
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <!-- 5: Settings -->
+                    <ScrollViewer>
+                        <StackPanel Spacing="16">
+                            <TextBlock Text="Application Settings" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource ShareX.Brush.Text}" />
+
+                            <!-- Appearance & Theme Section -->
+                            <Border Background="{DynamicResource ShareX.Brush.Background.Panel}"
+                                    BorderBrush="{DynamicResource ShareX.Brush.Border}" BorderThickness="1"
+                                    CornerRadius="12" Padding="20" Margin="0,8">
+                                <StackPanel Spacing="14">
+                                    <TextBlock Text="🎨  Theme &amp; Appearance" FontWeight="Bold" FontSize="16" Foreground="{DynamicResource ShareX.Brush.Text}" />
+                                    <TextBlock Text="Select a theme preset or use 'Auto' to synchronize with Noctalia-shell / Niri / XDG Portal:"
+                                               Foreground="{DynamicResource ShareX.Brush.Text.Secondary}" FontSize="12" />
+
+                                    <Grid ColumnDefinitions="*,Auto" Margin="0,4">
+                                        <ComboBox ItemsSource="{Binding ThemeModes}" SelectedItem="{Binding SelectedThemeMode}" HorizontalAlignment="Stretch" />
+                                    </Grid>
+
+                                    <Border Background="{DynamicResource ShareX.Brush.Background.Toolbar}" CornerRadius="6" Padding="10,6" Margin="0,4,0,0">
+                                        <TextBlock Text="{Binding ThemeStatus}" FontSize="12" Foreground="{DynamicResource ShareX.Brush.Accent.Start}" />
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Storage & Paths Section -->
+                            <Border Background="{DynamicResource ShareX.Brush.Background.Panel}"
+                                    BorderBrush="{DynamicResource ShareX.Brush.Border}" BorderThickness="1"
+                                    CornerRadius="12" Padding="20" Margin="0,8">
+                                <StackPanel Spacing="14">
+                                    <TextBlock Text="📁  File Storage &amp; Patterns" FontWeight="Bold" FontSize="16" Foreground="{DynamicResource ShareX.Brush.Text}" />
+
+                                    <TextBlock Text="Screenshots Save Directory" FontWeight="SemiBold" Foreground="{DynamicResource ShareX.Brush.Text}" />
+                                    <TextBox Text="{Binding ScreenshotsDirectory}" />
+
+                                    <TextBlock Text="File Name Pattern (Tokens: %y, %mo, %d, %h, %mi, %s, %ra{8})"
+                                               FontWeight="SemiBold" Foreground="{DynamicResource ShareX.Brush.Text}" Margin="0,8,0,0" />
+                                    <TextBox Text="{Binding FileNamePattern}" />
+                                </StackPanel>
+                            </Border>
+
+                            <Button Content="Save Settings" Command="{Binding SaveSettingsCommand}"
+                                    Background="{DynamicResource ShareX.Brush.Accent.Start}"
+                                    Foreground="{DynamicResource ShareX.Brush.Accent.Foreground}"
+                                    FontWeight="SemiBold" CornerRadius="8" Padding="16,8" />
+                        </StackPanel>
+                    </ScrollViewer>
+                </Carousel.Items>
+            </Carousel>
+        </Border>
+    </Grid>
+</Grid>
+
+    <Window.Styles>
+        <Style Selector="Button.nav-btn">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text.Secondary}" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Padding" Value="14,10" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Margin" Value="0,2" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+
+        <Style Selector="Button.nav-btn:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background.Hover}" />
+            <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text}" />
+        </Style>
+
+        <Style Selector="Button.nav-btn.active /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background}" />
+            <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Accent.Start}" />
+        </Style>
+
+        <Style Selector="Button.nav-btn.active:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background.Hover}" />
+            <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Accent.Start}" />
+        </Style>
+    </Window.Styles>
+</Window>

@@ -35,7 +35,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
     public partial class MainViewModel : ViewModelBase
     {
         private static EditorTool? _sessionLastUsedAnnotationTool;
-        private const string DefaultAnnotationFontFamily = "Segoe UI";
+        private static readonly string DefaultAnnotationFontFamily = ResolveDefaultFontFamily();
         private const string SpotlightBlurOptionPropertyName = "SpotlightBlur";
         private static readonly IReadOnlyList<string> _availableFontFamilies = BuildAvailableFontFamilies();
         private static readonly IReadOnlyList<TextHorizontalAlignment> _availableTextHorizontalAlignments = BuildAvailableTextHorizontalAlignments();
@@ -1270,6 +1270,36 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                     EffectEllipse = Options.SpotlightEllipse;
                     break;
             }
+        }
+
+        private static string ResolveDefaultFontFamily()
+        {
+            if (OperatingSystem.IsWindows())
+            {
+                return "Segoe UI";
+            }
+
+            try
+            {
+                var sysFonts = FontManager.Current.SystemFonts;
+                string[] preferredLinux = ["Inter", "Noto Sans", "Cantarell", "Ubuntu", "DejaVu Sans", "Roboto", "Liberation Sans"];
+                foreach (var font in preferredLinux)
+                {
+                    if (sysFonts.Any(f => string.Equals(f.Name, font, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        return font;
+                    }
+                }
+
+                var first = sysFonts.FirstOrDefault();
+                if (first != null && !string.IsNullOrWhiteSpace(first.Name))
+                {
+                    return first.Name;
+                }
+            }
+            catch { }
+
+            return "Inter";
         }
 
         private static IReadOnlyList<string> BuildAvailableFontFamilies()

@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="ShareX.Avalonia/ShareX.Avalonia.csproj" />
+  <Project Path="ShareX.ImageEditor/ShareX.ImageEditor.csproj" />
+  <Project Path="ShareX.Linux.Capture/ShareX.Linux.Capture.csproj" />
+  <Project Path="ShareX.Linux.Core/ShareX.Linux.Core.csproj" />
+  <Project Path="ShareX.Linux.Recording/ShareX.Linux.Recording.csproj" />
+  <Project Path="ShareX.Linux/ShareX.Linux.csproj" />
+</Solution>

@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -39,6 +39,7 @@ namespace ShareX.ImageEditor.Presentation.Views
         private readonly ImageEditorOptions? _options;
         private readonly MainViewModel _viewModel;
         private string? _pendingFilePath;
+        private SKBitmap? _pendingBitmap;
         private bool _allowClose;
 
         public EditorWindow() : this(null)
@@ -149,6 +150,12 @@ namespace ShareX.ImageEditor.Presentation.Views
                 LoadImageInternal(_pendingFilePath);
                 _pendingFilePath = null;
             }
+            else if (_pendingBitmap != null)
+            {
+                _viewModel.UpdatePreview(_pendingBitmap);
+                _viewModel.IsDirty = false;
+                _pendingBitmap = null;
+            }
         }
 
         /// <summary>
@@ -232,6 +239,12 @@ namespace ShareX.ImageEditor.Presentation.Views
         {
             if (bitmap == null) return;
 
+            if (!IsLoaded)
+            {
+                _pendingBitmap = bitmap;
+                return;
+            }
+
             try
             {
                 _viewModel.UpdatePreview(bitmap);
@@ -287,6 +300,18 @@ namespace ShareX.ImageEditor.Presentation.Views
         {
             using var bitmap = GetResultBitmap();
             return bitmap != null ? EncodeBitmapAsBmp(bitmap) : null;
+        }
+
+        /// <summary>
+        /// Gets the current edited image encoded as a PNG byte array.
+        /// </summary>
+        public byte[]? GetResultPngBytes()
+        {
+            using var bitmap = GetResultBitmap();
+            if (bitmap == null) return null;
+            using var image = SKImage.FromBitmap(bitmap);
+            using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+            return data?.ToArray();
         }
 
         private static byte[] EncodeBitmapAsBmp(SKBitmap bitmap)

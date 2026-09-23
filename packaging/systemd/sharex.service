@@ -1,0 +1,16 @@
+[Unit]
+Description=ShareX Screen Capture & Annotation Daemon (Wayland)
+Documentation=https://github.com/lean1ee/ShareX
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/sharex --background
+Restart=on-failure
+RestartSec=1s
+SuccessExitStatus=0
+Slice=app-graphical.slice
+
+[Install]
+WantedBy=graphical-session.target

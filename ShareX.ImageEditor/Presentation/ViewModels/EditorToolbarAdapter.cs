@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -457,6 +457,12 @@ public sealed class EditorToolbarAdapter : IAnnotationToolbarAdapter, IDisposabl
                 break;
             case nameof(MainViewModel.HasAnnotations):
                 OnPropertyChanged(nameof(HasAnnotations));
+                break;
+            case nameof(MainViewModel.CanUndo):
+                OnPropertyChanged(nameof(CanUndo));
+                break;
+            case nameof(MainViewModel.CanRedo):
+                OnPropertyChanged(nameof(CanRedo));
                 break;
             case nameof(MainViewModel.ShowTextColor):
                 OnPropertyChanged(nameof(ShowTextColor));

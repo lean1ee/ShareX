@@ -1,0 +1,62 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="ShareX.Linux.Recording.RecordingToolbarWindow"
+        Title="Recording"
+        Width="220"
+        Height="46"
+        CanResize="False"
+        ShowInTaskbar="False"
+        WindowDecorations="None"
+        Topmost="True"
+        Background="Transparent"
+        WindowStartupLocation="Manual">
+
+    <Border Background="#F0181825"
+            CornerRadius="23"
+            BorderBrush="#44FFFFFF"
+            BorderThickness="1"
+            Padding="12,6"
+            BoxShadow="0 4 20 0 #A0000000">
+        <Grid ColumnDefinitions="Auto,*,Auto,Auto" VerticalAlignment="Center">
+            <!-- Recording Indicator -->
+            <Ellipse Grid.Column="0"
+                     Name="RecDot"
+                     Width="10"
+                     Height="10"
+                     Fill="#EF4444"
+                     VerticalAlignment="Center"
+                     Margin="0,0,8,0" />
+
+            <!-- Timer Text -->
+            <TextBlock Grid.Column="1"
+                       Name="TimerText"
+                       Text="00:00"
+                       Foreground="White"
+                       FontWeight="SemiBold"
+                       FontSize="13"
+                       VerticalAlignment="Center" />
+
+            <!-- Stop Button -->
+            <Button Grid.Column="2"
+                    Name="StopButton"
+                    Content="■ Stop"
+                    Background="#DC2626"
+                    Foreground="White"
+                    FontSize="12"
+                    FontWeight="SemiBold"
+                    CornerRadius="14"
+                    Padding="10,4"
+                    Margin="0,0,6,0" />
+
+            <!-- Cancel Button -->
+            <Button Grid.Column="3"
+                    Name="CancelButton"
+                    Content="✕"
+                    Background="#374151"
+                    Foreground="White"
+                    FontSize="12"
+                    CornerRadius="14"
+                    Padding="8,4" />
+        </Grid>
+    </Border>
+</Window>

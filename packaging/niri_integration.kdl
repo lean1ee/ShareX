@@ -1,0 +1,35 @@
+// =============================================================================
+// ShareX Integration for Niri (Wayland)
+// =============================================================================
+
+// --- 1. Keybindings (add to ~/.config/niri/cfg/keybinds.kdl) ---
+// Note: Replace or comment out existing default `screenshot` actions
+binds {
+    Print       repeat=false hotkey-overlay-title="ShareX: Capture Region"        { spawn "sharex" "--capture-region"; }
+    Mod+Shift+S repeat=false hotkey-overlay-title="ShareX: Capture Region & Edit" { spawn "sharex" "--capture-region-edit"; }
+    Shift+Print repeat=false hotkey-overlay-title="ShareX: Capture Region & Edit" { spawn "sharex" "--capture-region-edit"; }
+    Ctrl+Print  repeat=false hotkey-overlay-title="ShareX: Capture Full Screen"   { spawn "sharex" "--capture-screen"; }
+    Alt+Print   repeat=false hotkey-overlay-title="ShareX: Record Region (Video)" { spawn "sharex" "--record-region"; }
+    Mod+Print   repeat=false hotkey-overlay-title="ShareX: Record Region (GIF)"   { spawn "sharex" "--record-gif"; }
+}
+
+// --- 2. Window Rules (add to ~/.config/niri/cfg/rules.kdl) ---
+// 1. Pinned image annotations: float, borderless, pinned on top
+window-rule {
+    match app-id=r#"^([Ss]hare[Xx].*|sharex)$"# title=r#"^Pinned Image.*"#
+    open-floating true
+    geometry-corner-radius 0
+    clip-to-geometry false
+}
+
+// 2. Small utility dialogs and color pickers: float
+window-rule {
+    match app-id=r#"^([Ss]hare[Xx].*|sharex)$"# title=r#"^(Screen Color Picker|Color Picker|Insert Image|New Image|Select Area).*"#
+    open-floating true
+}
+
+// 3. Main Window and Image Editor: open as normal tiling columns in Niri
+window-rule {
+    match app-id=r#"^([Ss]hare[Xx].*|sharex)$"# title=r#"^(ShareX \(Wayland Linux\)|ShareX - Image editor).*"#
+    open-floating false
+}

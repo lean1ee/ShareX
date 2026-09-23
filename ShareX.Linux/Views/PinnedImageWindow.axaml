@@ -1,0 +1,67 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="ShareX.Linux.Views.PinnedImageWindow"
+        Title="Pinned Image"
+        Icon="/Assets/sharex.ico"
+        WindowDecorations="None"
+        Topmost="True"
+        Background="Transparent"
+        TransparencyLevelHint="Transparent"
+        CanResize="True"
+        ShowInTaskbar="True"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.ContextMenu>
+        <ContextMenu Name="ImageContextMenu">
+            <MenuItem Name="MenuCopy" Header="Copy to Clipboard" InputGesture="Ctrl+C" />
+            <MenuItem Name="MenuSaveAs" Header="Save As..." InputGesture="Ctrl+S" />
+            <Separator />
+            <MenuItem Header="Opacity">
+                <MenuItem Name="MenuOpacity100" Header="100%" />
+                <MenuItem Name="MenuOpacity80" Header="80%" />
+                <MenuItem Name="MenuOpacity60" Header="60%" />
+                <MenuItem Name="MenuOpacity40" Header="40%" />
+            </MenuItem>
+            <MenuItem Name="MenuTopmost" Header="Always on Top" />
+            <MenuItem Name="MenuResetScale" Header="Reset Scale (100%)" InputGesture="Ctrl+0" />
+            <Separator />
+            <MenuItem Name="MenuClose" Header="Close" InputGesture="Esc" />
+        </ContextMenu>
+    </Window.ContextMenu>
+
+    <Border Name="ContainerBorder"
+            Background="#1E1E2E"
+            BorderBrush="#585B70"
+            BorderThickness="1"
+            CornerRadius="6"
+            ClipToBounds="True"
+            BoxShadow="0 6 24 0 #80000000">
+        <Grid>
+            <!-- Pinned Image Display -->
+            <Image Name="PinnedImage"
+                   Stretch="Uniform"
+                   RenderOptions.BitmapInterpolationMode="HighQuality" />
+
+            <!-- Close button top-right (visible on hover) -->
+            <Button Name="CloseButton"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Margin="6"
+                    Width="24"
+                    Height="24"
+                    Padding="0"
+                    Background="#80000000"
+                    Foreground="White"
+                    BorderThickness="0"
+                    CornerRadius="12"
+                    Opacity="0.4"
+                    Cursor="Hand">
+                <TextBlock Text="✕"
+                           FontSize="12"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center" />
+            </Button>
+        </Grid>
+    </Border>
+</Window>

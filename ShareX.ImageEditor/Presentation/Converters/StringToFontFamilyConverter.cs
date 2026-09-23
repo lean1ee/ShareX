@@ -31,7 +31,7 @@ namespace ShareX.ImageEditor.Presentation.Converters
 {
     public class StringToFontFamilyConverter : IValueConverter
     {
-        private const string DefaultFontFamilyName = "Segoe UI";
+        private static readonly string DefaultFontFamilyName = OperatingSystem.IsWindows() ? "Segoe UI" : "Inter";
 
         public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {

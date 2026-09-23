@@ -360,6 +360,11 @@ namespace ShareX.ImageEditor.Presentation.Views
             }
 
             modalHost.RenderTransform = null;
+            if (!OperatingSystem.IsWindows())
+            {
+                return;
+            }
+
             Point? targetCenter = GetCursorScreenCenter(this);
             if (!targetCenter.HasValue)
             {
@@ -382,6 +387,11 @@ namespace ShareX.ImageEditor.Presentation.Views
 
         private Point? GetCursorScreenCenter(Visual relativeTo)
         {
+            if (!OperatingSystem.IsWindows())
+            {
+                return null;
+            }
+
             TopLevel? topLevel = TopLevel.GetTopLevel(this);
             if (topLevel == null || !GetCursorPos(out NativePoint cursorPosition))
             {

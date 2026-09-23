@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -23,9 +23,12 @@
 
 #endregion License Information (GPL v3)
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Runtime.InteropServices;
 using Avalonia.Media.Imaging;
 using SkiaSharp;
-using System.Runtime.InteropServices;
 using Vortice.Direct2D1;
 using Vortice.DirectWrite;
 using Vortice.Mathematics;
@@ -50,6 +53,20 @@ public static class WindowsEmojiBitmapRenderer
     private static readonly ID2D1Factory7? D2DFactory;
     private static readonly IDWriteFactory? DWriteFactoryInstance;
     private static readonly IWICImagingFactory? WicFactory;
+
+    private static readonly string[] CandidateEmojiFamilies =
+    [
+        "Noto Color Emoji",
+        "Segoe UI Emoji",
+        "Apple Color Emoji",
+        "Twitter Color Emoji",
+        "JoyPixels",
+        "Emoji",
+        "Noto Emoji"
+    ];
+
+    private static SKTypeface? _cachedEmojiTypeface;
+    private static readonly object TypefaceLock = new();
 
     static WindowsEmojiBitmapRenderer()
     {
@@ -179,12 +196,85 @@ public static class WindowsEmojiBitmapRenderer
         return CopyWicBitmapToSkBitmap(wicBitmap, canvasSize, canvasSize);
     }
 
+    private static SKTypeface GetEmojiTypeface()
+    {
+        if (_cachedEmojiTypeface != null)
+        {
+            return _cachedEmojiTypeface;
+        }
+
+        lock (TypefaceLock)
+        {
+            if (_cachedEmojiTypeface != null)
+            {
+                return _cachedEmojiTypeface;
+            }
+
+            var fontManager = SKFontManager.Default;
+
+            // 1. Try matching known candidate emoji families
+            foreach (var family in CandidateEmojiFamilies)
+            {
+                var tf = fontManager.MatchFamily(family);
+                if (tf != null && (tf.FamilyName.Contains("Emoji", StringComparison.OrdinalIgnoreCase) ||
+                                   tf.FamilyName.Contains("Color", StringComparison.OrdinalIgnoreCase) ||
+                                   tf.FamilyName.Equals(family, StringComparison.OrdinalIgnoreCase)))
+                {
+                    _cachedEmojiTypeface = tf;
+                    return tf;
+                }
+            }
+
+            // 2. Try fontconfig alias "emoji"
+            try
+            {
+                var emojiAlias = fontManager.MatchFamily("emoji");
+                if (emojiAlias != null)
+                {
+                    _cachedEmojiTypeface = emojiAlias;
+                    return emojiAlias;
+                }
+            }
+            catch { }
+
+            // 3. Common Linux font paths for Noto Color Emoji
+            string[] linuxFontPaths =
+            [
+                "/usr/share/fonts/noto/NotoColorEmoji.ttf",
+                "/usr/share/fonts/google-noto-color-emoji-fonts/NotoColorEmoji.ttf",
+                "/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf",
+                "/usr/share/fonts/noto-color-emoji/NotoColorEmoji.ttf",
+                "/usr/share/fonts/TTF/NotoColorEmoji.ttf"
+            ];
+
+            foreach (var path in linuxFontPaths)
+            {
+                if (File.Exists(path))
+                {
+                    try
+                    {
+                        var tf = SKTypeface.FromFile(path);
+                        if (tf != null)
+                        {
+                            _cachedEmojiTypeface = tf;
+                            return tf;
+                        }
+                    }
+                    catch { }
+                }
+            }
+
+            _cachedEmojiTypeface = SKTypeface.Default;
+            return _cachedEmojiTypeface;
+        }
+    }
+
     private static SKBitmap? RenderWithSkiaFallback(string glyph, int canvasSize)
     {
-        using SKTypeface? typeface = SKFontManager.Default.MatchFamily(EmojiFontFamily) ?? SKTypeface.Default;
+        SKTypeface typeface = GetEmojiTypeface();
         using var rawBitmap = new SKBitmap(new SKImageInfo(canvasSize, canvasSize, SKColorType.Bgra8888, SKAlphaType.Premul));
         using var canvas = new SKCanvas(rawBitmap);
-        using var font = new SKFont(typeface, canvasSize * 0.68f);
+        using var font = new SKFont(typeface, canvasSize * 0.75f);
         using var paint = new SKPaint
         {
             IsAntialias = true,

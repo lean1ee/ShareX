@@ -1,0 +1,36 @@
+[Desktop Entry]
+Name=ShareX
+GenericName=Screen Capture Tool
+Comment=Screen capture, file sharing and productivity tool for Wayland
+Exec=sharex %U
+Icon=sharex
+Terminal=false
+Type=Application
+Categories=Utility;Graphics;Photography;
+StartupNotify=true
+StartupWMClass=ShareX.Linux
+Actions=CaptureRegion;CaptureRegionEdit;CaptureScreen;RecordRegion;RecordGif;OpenEditor;
+
+[Desktop Action CaptureRegion]
+Name=Capture Region
+Exec=sharex --capture-region
+
+[Desktop Action CaptureRegionEdit]
+Name=Capture Region & Edit
+Exec=sharex --capture-region-edit
+
+[Desktop Action CaptureScreen]
+Name=Capture Full Screen
+Exec=sharex --capture-screen
+
+[Desktop Action RecordRegion]
+Name=Record Screen Video
+Exec=sharex --record-region
+
+[Desktop Action RecordGif]
+Name=Record Animated GIF
+Exec=sharex --record-gif
+
+[Desktop Action OpenEditor]
+Name=Open Image Editor
+Exec=sharex --open-editor

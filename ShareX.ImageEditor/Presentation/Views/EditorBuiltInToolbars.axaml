@@ -14,7 +14,7 @@
                 IsHitTestVisible="{Binding ShowToolbars}">
             <controls:AnnotationToolbar x:Name="AnnotationToolbarControl"
                                         DataContext="{Binding ToolbarAdapter}"
-                                        ShowEditingActions="False"
+                                        ShowEditingActions="True"
                                         MaxWidth="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
         </Border>
 

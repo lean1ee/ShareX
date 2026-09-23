@@ -1,0 +1,71 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="ShareX.Linux.Capture.Overlay.InteractiveOverlayWindow"
+        Title="ShareX Region Capture"
+        ShowInTaskbar="False"
+        WindowDecorations="None"
+        Topmost="True"
+        WindowState="FullScreen"
+        Background="Transparent"
+        Focusable="True">
+
+    <Grid Name="RootGrid" Background="Transparent">
+        <!-- Canvas for rendering background, selection, magnifier, crosshairs -->
+        <!-- Overlay Canvas will be dynamically rendered -->
+
+        <!-- Floating Action Toolbar (visible when region is selected) -->
+        <Border Name="ActionToolbar"
+                IsVisible="False"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Background="#EE1E1E2E"
+                CornerRadius="8"
+                BorderBrush="#44FFFFFF"
+                BorderThickness="1"
+                Padding="6,4"
+                BoxShadow="0 4 16 0 #80000000">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+                <!-- Copy -->
+                <Button Name="CopyButton"
+                        Content="✓ Copy (Enter)"
+                        Background="#2563EB"
+                        Foreground="White"
+                        FontWeight="SemiBold"
+                        CornerRadius="6"
+                        Padding="10,6" />
+
+                <!-- Edit -->
+                <Button Name="EditButton"
+                        Content="✎ Edit (E)"
+                        Background="#374151"
+                        Foreground="White"
+                        CornerRadius="6"
+                        Padding="10,6" />
+
+                <!-- Save -->
+                <Button Name="SaveButton"
+                        Content="💾 Save (Ctrl+S)"
+                        Background="#374151"
+                        Foreground="White"
+                        CornerRadius="6"
+                        Padding="10,6" />
+
+                <!-- Upload -->
+                <Button Name="UploadButton"
+                        Content="☁ Upload (U)"
+                        Background="#059669"
+                        Foreground="White"
+                        CornerRadius="6"
+                        Padding="10,6" />
+
+                <!-- Cancel -->
+                <Button Name="CancelButton"
+                        Content="✕"
+                        Background="#DC2626"
+                        Foreground="White"
+                        CornerRadius="6"
+                        Padding="10,6" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -76,7 +76,7 @@ public sealed class ASCIIArtImageEffect : ImageEffectBase
         using SKCanvas canvas = new SKCanvas(result);
         canvas.Clear(DarkBackground ? new SKColor(12, 12, 12, 255) : SKColors.White);
 
-        using SKTypeface? customTypeface = SKTypeface.FromFamilyName("Consolas");
+        using SKTypeface? customTypeface = SKTypeface.FromFamilyName("Consolas") ?? SKTypeface.FromFamilyName("monospace") ?? SKTypeface.Default;
         using SKFont font = new SKFont(customTypeface ?? SKTypeface.Default, cell * 1.02f);
         using SKPaint paint = new SKPaint
         {
